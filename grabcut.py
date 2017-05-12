@@ -24,6 +24,7 @@ Key 's' - To save the results
 import numpy as np
 import cv2
 import sys
+from before_grab import pre_grab
 
 BLUE = [255,0,0]        # rectangle color
 RED = [0,0,255]         # PR BG
@@ -100,8 +101,13 @@ else:
     print "Correct Usage : python grabcut.py <filename> \n"
     filename = 'far.jpg'
 '''
+
+#-----------------------------------Start-------------------------------------------
+
 img = cv2.imread("./test1.jpg")
+img=pre_grab(img)
 img2 = img.copy()                               # a copy of original image
+img3 = img.copy()
 mask = np.zeros(img.shape[:2],dtype = np.uint8) # mask initialized to PR_BG
 output = np.zeros(img.shape,np.uint8)           # output image to be shown
 
@@ -131,13 +137,19 @@ while(1):
     elif k == ord('2'): # PR_BG drawing
         value = DRAW_PR_BG
     elif k == ord('3'): # PR_FG drawing
-        value = DRAW_PR_FG
+        value = DRAW_PR_FG  
     elif k == ord('s'): # save image
         bar = np.zeros((img.shape[0],5,3),np.uint8)
         res = np.hstack((img2,bar,img,bar,output))
-        cv2.imwrite('grabcut_output.png',output)
+        gray = cv2.cvtColor(output,cv2.COLOR_BGR2GRAY)
+        ret, binary = cv2.threshold(gray,1,255,cv2.THRESH_BINARY)  
+
+        contours, hierarchy = cv2.findContours(binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)  
+
+        cv2.drawContours(img3,contours,-1,(0,0,255),3)
+        cv2.imwrite('grabcut_output.png',img3)
         cv2.imwrite('grabcut_output_combined.png',res)
-        print " Result saved as image \n"
+        print " Result saved as image of original iamge \n"
     elif k == ord('r'): # reset everything
         print "resetting \n"
         rect = (0,0,1,1)
