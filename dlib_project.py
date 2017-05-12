@@ -10,7 +10,7 @@ predictor_path = "./shape_predictor_68_face_landmarks.dat"
 
 #1.使用dlib自带的frontal_face_detector作为我们的人脸提取器  
 detector = dlib.get_frontal_face_detector()
-  
+
 #2.使用官方提供的模型构建特征提取器  
 predictor = dlib.shape_predictor(predictor_path)
   
